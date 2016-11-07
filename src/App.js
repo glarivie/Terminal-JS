@@ -47,6 +47,7 @@ class App extends Component {
 
   render() {
     const { value, output } = this.state;
+
     return (
       <div className="app">
         <h1><FontAwesome name="terminal" className="icon" /> Terminal<span>.js</span></h1>
