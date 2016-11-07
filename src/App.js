@@ -16,7 +16,7 @@ class App extends Component {
   handleKeyPress = ({ key }) => {
     const { output, value, folders } = this.state;
     let outputProcessed = output.concat(value);
-    let foldersList = [];
+    let foldersList = folders;
 
     if (key.includes('Enter')) {
       if (_.isEqual(value, 'clear') || _.isEqual(value, 'exit')) {
