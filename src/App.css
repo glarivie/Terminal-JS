@@ -49,6 +49,7 @@ h2 {
 }
 
 .terminal .output {
+  line-height: 20px;
   font-family: 'Roboto-Mono', monospace;
   background-color: #1A1A1A;
   border-radius: 4px 4px 0 0;
@@ -58,8 +59,7 @@ h2 {
   height: 400px;
   border-bottom: 1px solid rgba(255, 255, 255, .15);
   padding: 10px;
-  overflow-y: scroll;
-  overflow-x: hidden;
+  overflow: hidden;
 }
 
 .input {
@@ -109,4 +109,13 @@ footer {
 .output::-webkit-scrollbar-thumb {
 	border-radius: 0 4px 0 0;
 	background-color: #111;
+}
+
+.output .err {
+  color: #871010;
+}
+
+.output .folder {
+  color: rgb(80, 159, 242);
+  margin-right: 7px;
 }

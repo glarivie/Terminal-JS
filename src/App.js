@@ -9,13 +9,19 @@ class App extends Component {
     value: '',
     output: [],
     folders: [],
+    history: [],
+    historyIndex: 0,
   };
 
   handleChange = ({ target: { value } }) => this.setState({ value });
 
-  handleKeyPress = ({ key }) => {
-    const { output, value, folders } = this.state;
-    let outputProcessed = output.concat(value);
+  handleKeyPress = async ({ key }) => {
+    const { output, value, folders, history, historyIndex } = this.state;
+    let outputProcessed = output.concat(
+      <strong className="cmd">
+        <FontAwesome name="angle-right" />&nbsp;{value}
+      </strong>
+    );
     let foldersList = folders;
 
     if (key.includes('Enter')) {
@@ -27,21 +33,48 @@ class App extends Component {
         const toRemove = value.trim().split(' ').slice(1);
 
         toRemove.forEach(name => {
-          const index = folders.indexOf(name);
-
-          if (index !== -1) {
-            foldersList = folders.slice(index);
-          }
+          const index = foldersList.indexOf(name);
+          if (index !== -1) foldersList.splice(index, 1);
         });
       } else if (_.isEqual(value, 'ls')) {
-        outputProcessed = output.concat(value).concat(folders);
+        const foldersProcessed = folders.length && (
+          <span className="folders">
+            {folders.map((el, index) => (
+              <span className="folder" key={index}>{el}</span>
+            ))}
+          </span>
+        );
+
+        outputProcessed = outputProcessed.concat(foldersProcessed || []);
+      } else {
+        outputProcessed = outputProcessed.concat(
+          <span className="err">
+            [error] command not found: {value.split(' ')[0]}
+          </span>
+        );
       }
 
-      this.setState({
+      await this.setState({
         value: '',
-        output: outputProcessed || output,
+        output: outputProcessed.length > 19 ? outputProcessed.slice(-19) : (outputProcessed || output),
         folders: foldersList || folders,
+        history: history.concat(value),
       });
+      this.setState({ historyIndex: this.state.history.length - 1 });
+    } else if (key.includes('ArrowUp')) {
+      if (history[historyIndex - 1]) {
+        this.setState({
+          value: history[historyIndex - 1],
+          historyIndex: historyIndex - 1,
+        });
+      }
+    } else if (key.includes('ArrowDown')) {
+      if (history[historyIndex + 1]) {
+        this.setState({
+          value: history[historyIndex + 1],
+          historyIndex: historyIndex + 1,
+        });
+      }
     }
   };
 
@@ -51,7 +84,7 @@ class App extends Component {
     return (
       <div className="app">
         <h1><FontAwesome name="terminal" className="icon" /> Terminal<span>.js</span></h1>
-        <h2>Simple React Single Page App</h2>
+        <h2>Simple terminal made with React</h2>
 
         <div className="content">
           <div className="terminal">
@@ -64,7 +97,7 @@ class App extends Component {
                 autoFocus
                 value={value}
                 onChange={this.handleChange}
-                onKeyPress={this.handleKeyPress}
+                onKeyDown={this.handleKeyPress}
               />
             </div>
           </div>
